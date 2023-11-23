@@ -17,11 +17,11 @@ def plot_prediction(df,close_tomorrow,last_n_days=400):
     plt.gcf().autofmt_xdate()
 
     plt.gca().grid(True)
-    plt.gca().set_ylabel(r'Price [\$]')
+    plt.gca().set_ylabel(r'Close price [\$]')
     plt.gca().set_xlabel(r'Date')
     plt.legend()
-    #plt.title(f"Predicted price for {date_tomorrow.strftime('%Y-%m-%d')}: ${close_tomorrow:.2f}")
-    plt.savefig(f"plot-prediction_for_{date_tomorrow.strftime('%Y%m%d')}.pdf")
+    plt.title(f"Predicted close price for {date_tomorrow.strftime('%Y-%m-%d')}: ${float(close_tomorrow):.2f}")
+    plt.savefig(f"fig-prediction_for_{date_tomorrow.strftime('%Y%m%d')}.pdf")
 
 
 def get_date_string(date):

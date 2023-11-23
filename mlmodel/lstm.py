@@ -33,7 +33,7 @@ def build_model(_df,validation=False):
     model.add(Dense(units=1))
 
     model.compile(optimizer = 'adam', loss = 'mean_squared_error')
-    model.fit(x_train, y_train, epochs = 5, batch_size=32)
+    model.fit(x_train, y_train, epochs = 25, batch_size=32)
 
     if validation:
         x_test, y_test, scaler = prepare_close_data(test_data) 

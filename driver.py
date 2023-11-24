@@ -1,22 +1,41 @@
-from mlstockpredictor.mlmodel.lstm import build_model,predict_tomorrow
+from mlstockpredictor.mlmodel.lstm import build_model,validate_model,predict_tomorrow
 from mlstockpredictor.data.stock import get_stock_data
 from mlstockpredictor.aux.functions import plot_prediction
 
-def run(ticker,training_days,plot=True):
 
-  df = get_stock_data(ticker)
+# <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+# Run prediction one time to get tomorrow's estimated Close price
+# <>
+def run(ticker,training_days=60,split_frac=0.8,plot=True,mode_validate=False):
 
-  # Use the last {training_days} days to predict the close close tomorrow
-  train_df =   df.iloc[ : -training_days, : ]
-  predict_df = df.iloc[-training_days : , : ]
+  df = get_stock_data(ticker) #aim137 agregar fechas
   
-  model = build_model(train_df,validation = False)
+  if mode_validate and (df.shape[0] - int(df.shape[0]*split_frac) <= training_days):
+    raise ValueError("The number of datapoints requested for each prediction exceedes the size of the dataframe provided")
+
+  if mode_validate:
+    # Use {split_frac*100}% of the data to train the model 
+    # and the las {(1-split_frac)*100}% to test it
+    train_df   = df.iloc[ : int(df.shape[0]*split_frac), : ]
+    test_df    = df.iloc[int(df.shape[0]*split_frac) : , : ]
+  else:
+    # Use the last {training_days} days to predict the close close tomorrow
+    # Use the remaining (earlier) data to train the model
+    train_df   = df.iloc[ : -training_days, : ]
+    predict_df = df.iloc[-training_days : , : ]
   
-  close_tomorrow = predict_tomorrow(predict_df, model)
+  # Build model
+  model = build_model(train_df,training_days)
   
-  plot_prediction(df,close_tomorrow)
- 
-  return close_tomorrow
+  if mode_validate:
+    prediction = validate_model(model,test_df,training_days)
+  else:
+    prediction = predict_tomorrow(model,predict_df)
+
+  if plot:
+    plot_prediction(df,prediction,ticker=ticker,mode_validate=mode_validate)
+
+  return prediction
   
   
 if __name__ == "__main__":

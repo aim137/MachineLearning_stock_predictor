@@ -4,19 +4,11 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout, LSTM
 from matplotlib import pyplot as plt
 
-def build_model(_df,validation=False):
+def build_model(train_data,training_days):
     """
     Build ML model
     """
-
-    if validation: #split dataframe in two
-        train_data = _df[ : int(_df.shape[0]*0.8)]
-        test_data  = _df[int(_df.shape[0]*0.8) : ]
-    else:
-        train_data = _df
-
-
-    x_train, y_train, scaler = prepare_close_data(train_data)
+    x_train, y_train, scaler = prepare_close_data(train_data,training_days)
 
     # Build model
     model = Sequential()
@@ -33,24 +25,23 @@ def build_model(_df,validation=False):
     model.add(Dense(units=1))
 
     model.compile(optimizer = 'adam', loss = 'mean_squared_error')
-    model.fit(x_train, y_train, epochs = 25, batch_size=32)
-
-    if validation:
-        x_test, y_test, scaler = prepare_close_data(test_data) 
-        y_validation = model.predict(x_test)
-        y_validation = scaler.inverse_transform(y_validation)
-        y_test = scaler.inverse_transform(y_test.reshape(-1,1))
-
-        plt.plot(y_test,label = 'Test data')
-        plt.plot(y_validation,label = 'Validation data')
-        plt.legend()
-        plt.savefig('plot-validation.pdf')
+    model.fit(x_train, y_train, epochs = 5, batch_size=32)
     
 
     #model.save('saved_model') #and then we can load it and use it
     return model
 
-def predict_tomorrow(latest_df,model):
+
+def validate_model(model,test_data,training_days):
+
+    x_test, y_test, scaler = prepare_close_data(test_data,training_days) 
+    y_validation = model.predict(x_test)
+    y_validation = scaler.inverse_transform(y_validation)
+    #y_test = scaler.inverse_transform(y_test.reshape(-1,1)) # y_test no longer returned
+
+    return y_validation
+
+def predict_tomorrow(model,latest_df):
 
     x_predict, y_dummy, scaler = prepare_close_data(
                                         latest_df,
@@ -59,9 +50,10 @@ def predict_tomorrow(latest_df,model):
                                         )
 
     prediction = model.predict(x_predict)
+
     return scaler.inverse_transform(prediction.reshape(-1,1))
 
-def prepare_close_data(_df_in,training_days=60,predict_days=0):
+def prepare_close_data(_df_in,training_days,predict_days=0):
     """
     Prepares the data for use with LSTM, returns a NumPy array.
     """
@@ -76,6 +68,8 @@ def prepare_close_data(_df_in,training_days=60,predict_days=0):
             y_train.append(scaled_data[x,0])
         except IndexError:
             pass
+    
+    if x is None: raise ValueError("The number of datapoints requested for each prediction exceedes the size of the dataframe provided")
 
     x_train, y_train = np.array(x_train), np.array(y_train)
     x_train = np.reshape(x_train, (x_train.shape[0],x_train.shape[1],1))
@@ -85,6 +79,10 @@ def prepare_close_data(_df_in,training_days=60,predict_days=0):
 if __name__ == "__main__":
     from mlstockpredictor.data.stock import get_stock_data
     df = get_stock_data('TSLA')
-    build_model(df,validation = True)
+    split_frac=0.8
+    train_data = df[ : int(df.shape[0]*split_frac)]
+    test_data  = df[int(df.shape[0]*split_frac) : ]
+    model = build_model(train_data)
+    validate_model(model,test_data,60)
 
     

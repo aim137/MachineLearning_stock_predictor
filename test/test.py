@@ -1,3 +1,5 @@
 from mlstockpredictor.driver import run
 
-run('TSLA',60)
+l = ['TSLA', 'AAPL', 'GOOG', 'META', 'MSFT', 'AMZN', 'FVRR', 'PLTR', 'LCID']
+for _symbol in l:
+    run(_symbol)

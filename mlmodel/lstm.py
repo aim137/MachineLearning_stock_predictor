@@ -3,6 +3,7 @@ from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout, LSTM
 from matplotlib import pyplot as plt
+#from icecream import ic
 
 def build_model(train_data,training_days):
     """
@@ -25,7 +26,7 @@ def build_model(train_data,training_days):
     model.add(Dense(units=1))
 
     model.compile(optimizer = 'adam', loss = 'mean_squared_error')
-    model.fit(x_train, y_train, epochs = 5, batch_size=32)
+    model.fit(x_train, y_train, epochs = 25, batch_size=32)
     
 
     #model.save('saved_model') #and then we can load it and use it

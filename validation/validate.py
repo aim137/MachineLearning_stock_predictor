@@ -1,4 +1,5 @@
-from mlstockpredictor.mlmodel.lstm import build_model
-from mlstockpredictor.data.stock import get_stock_data
-df = get_stock_data('TSLA')
-t,v = build_model(df,validation = True)
+from mlstockpredictor.driver import run
+
+l = ['TSLA', 'AAPL', 'GOOG', 'META', 'MSFT', 'AMZN', 'FVRR', 'PLTR', 'LCID']
+for _symbol in l:
+    run(_symbol,mode_validate=True)

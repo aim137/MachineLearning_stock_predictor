@@ -1,40 +1,45 @@
 from mlstockpredictor.mlmodel.lstm import build_model,validate_model,predict_tomorrow
 from mlstockpredictor.data.stock import get_stock_data
 from mlstockpredictor.aux.functions import plot_prediction
+from mlstockpredictor.aux.defaults import default_model_params
+from collections import ChainMap
 
 
 # <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 # Run prediction one time to get tomorrow's estimated Close price
 # or validate a model with a given set of parameters
-# <>
-def run(ticker,training_days=60,split_frac=0.8,plot=True,mode_validate=False):
+# <><><><><>
+#def run(ticker: str, training_days: int = 60 , split_frac: float = 0.8 , plot: bool = True , model_params['is_validate']: bool = False) -> tuple:
+def run(ticker: str, start: str = None, end: str = None, model_params: dict = {}) -> tuple:
 
-  df = get_stock_data(ticker) #aim137 agregar fechas
+  model_params = dict(ChainMap(model_params,default_model_params))
+
+  df = get_stock_data(ticker,start_date=start,end_date=end)
   
-  if mode_validate and (df.shape[0] - int(df.shape[0]*split_frac) <= training_days):
+  if model_params['is_validate'] and (df.shape[0] - int(df.shape[0]*model_params['split_frac']) <= model_params['training_days']):
     raise ValueError("The number of datapoints requested for each prediction exceedes the size of the dataframe provided")
 
-  if mode_validate:
+  if model_params['is_validate']:
     # Use {split_frac*100}% of the data to train the model 
     # and the las {(1-split_frac)*100}% to test it
-    train_df = df.iloc[ : int(df.shape[0]*split_frac), : ]
-    test_df  = df.iloc[int(df.shape[0]*split_frac) : , : ]
+    train_df = df.iloc[ : int(df.shape[0]*model_params['split_frac']), : ]
+    test_df  = df.iloc[int(df.shape[0]*model_params['split_frac']) : , : ]
   else:
     # Use the last {training_days} days to predict the close close tomorrow
     # Use the remaining (earlier) data to train the model
-    train_df = df.iloc[ : -training_days, : ]
-    test_df  = df.iloc[-training_days : , : ]
+    train_df = df.iloc[ : -model_params['training_days'], : ]
+    test_df  = df.iloc[-model_params['training_days'] : , : ]
   
   # Build model
-  model = build_model(train_df,training_days)
+  model = build_model(train_df,model_params)
   
-  if mode_validate:
-    prediction = validate_model(model,test_df,training_days)
+  if model_params['is_validate']:
+    prediction = validate_model(model,test_df,model_params)
   else:
     prediction = predict_tomorrow(model,test_df)
 
   if plot:
-    plot_prediction(df,prediction,ticker=ticker,mode_validate=mode_validate)
+    plot_prediction(df,prediction,ticker=ticker,is_validate=model_params['is_validate'])
 
   return test_df, prediction
   

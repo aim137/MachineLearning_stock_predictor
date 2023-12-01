@@ -3,30 +3,35 @@ from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout, LSTM
 from matplotlib import pyplot as plt
+from mlstockpredictor.aux.defaults import default_model_params
+from collections import ChainMap
+from pandas.core.frame import DataFrame
 #from icecream import ic
 
-def build_model(train_data,training_days):
+def build_model(train_data: DataFrame,model_params: dict) -> Sequential:
     """
     Build ML model
     """
-    x_train, y_train, scaler = prepare_close_data(train_data,training_days)
+    model_params = dict(ChainMap(model_params,default_model_params))
+
+    x_train, y_train, scaler = prepare_close_data(train_data,model_params['training_days'])
 
     # Build model
     model = Sequential()
 
-    model.add(LSTM(units=50, return_sequences = True, input_shape=(x_train.shape[1],1)))
-    model.add(Dropout(0.2))
+    model.add(LSTM(units=model_params['lstm_units_1'], return_sequences = True, input_shape=(x_train.shape[1],1)))
+    model.add(Dropout(model_params['lstm_dropout_1']))
 
-    model.add(LSTM(units=50, return_sequences = True))
-    model.add(Dropout(0.2))
+    model.add(LSTM(units=model_params['lstm_units_2'], return_sequences = True))
+    model.add(Dropout(model_params['lstm_dropout_2']))
 
-    model.add(LSTM(units=50))
-    model.add(Dropout(0.2))
+    model.add(LSTM(units=model_params['lstm_units_3']))
+    model.add(Dropout(model_params['lstm_dropout_3']))
 
     model.add(Dense(units=1))
 
-    model.compile(optimizer = 'adam', loss = 'mean_squared_error')
-    model.fit(x_train, y_train, epochs = 25, batch_size=32)
+    model.compile(optimizer = model_params['optimizer'], loss = model_params['loss'])
+    model.fit(x_train, y_train, epochs = model_params['epochs'], batch_size= model_params['batch_size'])
     
 
     #model.save('saved_model') #and then we can load it and use it
@@ -80,10 +85,11 @@ def prepare_close_data(_df_in,training_days,predict_days=0):
 if __name__ == "__main__":
     from mlstockpredictor.data.stock import get_stock_data
     df = get_stock_data('TSLA')
-    split_frac=0.8
-    train_data = df[ : int(df.shape[0]*split_frac)]
-    test_data  = df[int(df.shape[0]*split_frac) : ]
-    model = build_model(train_data)
+    mydict = {'split_frac':0.8}
+    train_data = df[ : int(df.shape[0]*mydict['split_frac'])]
+    test_data  = df[int(df.shape[0]*mydict['split_frac']) : ]
+    
+    model = build_model(train_data,mydict)
     validate_model(model,test_data,60)
 
     

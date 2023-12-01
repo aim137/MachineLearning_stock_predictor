@@ -5,14 +5,14 @@ import datetime
 #from icecream import ic
 
 
-def plot_prediction(df,prediction,n_days=120,ticker='TSLA',mode_validate=False):
+def plot_prediction(df,prediction,n_days=120,ticker='TSLA',is_validate=False):
     
     n_days = max(n_days,prediction.shape[0])
     # Actual data
     lof_dates = list(map(get_date_string,df['Date']))
     plt.plot(lof_dates[-n_days:],df['Close'].values[-n_days:],label=f"{ticker}")
 
-    if mode_validate:
+    if is_validate:
         # Validated data
         plt.plot(lof_dates[-prediction.shape[0]:],prediction,label=f"Validation")
     else:
@@ -30,11 +30,11 @@ def plot_prediction(df,prediction,n_days=120,ticker='TSLA',mode_validate=False):
     plt.gca().set_xlabel(r'Date')
     plt.legend()
     plt.title(f"{ticker}",loc='left')
-    if not mode_validate:
+    if not is_validate:
         plt.annotate(f"Prediction for {date_tomorrow.strftime('%Y-%m-%d')}: ${float(prediction):.2f}",
                     (0.5,1.025),xycoords='axes fraction')
 
-    if mode_validate:
+    if is_validate:
         tag = f"validation_up_to_{datetime.date.today().strftime('%Y%m%d-%H.%M.%S')}"
     else:
         tag = f"prediction_for_{date_tomorrow.strftime('%Y%m%d')}"

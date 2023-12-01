@@ -1,0 +1,16 @@
+default_model_params = {
+    'split_frac'     : 0.8,
+    'training_days'  : 60,
+    'lstm_units_1'   : 50,
+    'lstm_units_2'   : 50,
+    'lstm_units_3'   : 50,
+    'lstm_dropout_1' : 0.2,
+    'lstm_dropout_2' : 0.2,
+    'lstm_dropout_3' : 0.2,
+    'optimizer'      : 'adam',
+    'loss'           : 'mean_squared_error',
+    'epochs'         : 25,
+    'batch_size'     : 32,
+    'is_validate'    : False,
+    'should_plot'    : True,
+}

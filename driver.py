@@ -34,11 +34,11 @@ def run(ticker: str, start: str = None, end: str = None, model_params: dict = {}
   model = build_model(train_df,model_params)
   
   if model_params['is_validate']:
-    prediction = validate_model(model,test_df,model_params)
+    prediction = validate_model(model,test_df,model_params['training_days'])
   else:
     prediction = predict_tomorrow(model,test_df)
 
-  if plot:
+  if model_params['should_plot']:
     plot_prediction(df,prediction,ticker=ticker,is_validate=model_params['is_validate'])
 
   return test_df, prediction

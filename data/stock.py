@@ -10,8 +10,6 @@ def get_stock_data(ticker: str,start_date:str = None, end_date:str = None) -> Da
     """
     
     start, end = get_dates(start_date,end_date)
-    print(f'{start =}')
-    print(f'{end =}')
     try:
         _data = yf.download(ticker,start = start, end = end)
     except:

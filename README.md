@@ -16,6 +16,9 @@ cd to repo
 pip install -e .
 ```
 
+## How it works
+
+
 ## Usage
 
 Import run function
@@ -26,6 +29,10 @@ Option 1: Train model with all available data (except last 60 days) and predict 
 ```python
 df, tomorrow_close = driver.run('TSLA')
 ```
+
+![fig-TSLA_prediction](https://github.com/aim137/MachineLearning_stock_predictor/assets/70944449/949d7efa-1dce-4c12-9e70-df50a7f92724)
+
+
 Option 2: Build and validate a model with a given set of parameters, e.g.,
 ```python
 my_dict = {
@@ -36,10 +43,8 @@ my_dict = {
           }
 df, df_prediction = driver.run('TSLA', model_params=my_dict)
 ```
-What it does:
 
-Result of validation:
-![Validation excercise for TSLA stock price](./validation/fig-TSLA-validation_up_to_20231207-00.00.00.pdf "Try it yourself!")
+![fig-TSLA_validation](https://github.com/aim137/MachineLearning_stock_predictor/assets/70944449/a63ec254-a4cd-4f5d-86e4-1e0e6706c46e)
 
 ## Contributing
 

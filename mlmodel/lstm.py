@@ -68,9 +68,6 @@ def prepare_close_data(_df_in,training_days,predict_days=0):
 
     x_train, y_train = [], []
 
-    print(f"{training_days =}")
-    print(f"{scaled_data.shape[0] =}")
-    print(f"{predict_days =}")
     for x in range(training_days,scaled_data.shape[0]+predict_days):
         x_train.append(scaled_data[x-training_days:x,0])
         try:

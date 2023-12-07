@@ -1,8 +1,9 @@
 import yfinance as yf
 from datetime import datetime,timedelta
 from pandas.core.frame import DataFrame
-import pandas as pd
 from sqlalchemy import create_engine
+import pandas as pd
+from pytz import timezone
 
 def get_stock_data(ticker: str,start_date:str = None, end_date:str = None) -> DataFrame:
     """
@@ -16,9 +17,8 @@ def get_stock_data(ticker: str,start_date:str = None, end_date:str = None) -> Da
     _data = update_write_db(ticker, in_dates)
 
     _data.reset_index(inplace=True)
-    _data = _data[["Date","Close"]]
-    
-    return _data
+
+    return _data[["Date","Close"]]
 
 
 def get_dates(s,e):
@@ -26,10 +26,21 @@ def get_dates(s,e):
         _start = datetime.strptime(s,'%Y%m%d')
     except:
         _start = datetime(2000,1,1)
+    while _start.weekday() > 4:
+        _start += timedelta(days=1)
+
     try:
         _end = datetime.strptime(e,'%Y%m%d')
     except:
         _end = datetime.today()
+    while _end.weekday() > 4:
+        _end -= timedelta(days=1)
+
+    # Avoid today if market still open
+    if _end.strftime('%Y%m%d') == datetime.now().strftime('%Y%m%d'):
+        market_close = datetime.now().astimezone(timezone('US/Eastern')).hour >= 16
+        if not market_close:
+            _end -= timedelta(days=1)
     return _start, _end
 
 def update_write_db(ticker,in_dates):

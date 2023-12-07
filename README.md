@@ -18,6 +18,7 @@ pip install -e .
 
 ## How it works
 
+![Workflow](https://github.com/aim137/MachineLearning_stock_predictor/assets/70944449/00a78b4b-e835-4696-a27e-9e88418760b8)
 
 ## Usage
 
@@ -25,15 +26,8 @@ Import run function
 ```python
 from mlstockpredictor import driver
 ```
-Option 1: Train model with all available data (except last 60 days) and predict tomorrow's close price based on last 60 days
-```python
-df, tomorrow_close = driver.run('TSLA')
-```
 
-![fig-TSLA_prediction](https://github.com/aim137/MachineLearning_stock_predictor/assets/70944449/949d7efa-1dce-4c12-9e70-df50a7f92724)
-
-
-Option 2: Build and validate a model with a given set of parameters, e.g.,
+Option 1: Build and validate a model with a given set of parameters, e.g.,
 ```python
 my_dict = {
            'epochs': 25,
@@ -45,6 +39,15 @@ df, df_prediction = driver.run('TSLA', model_params=my_dict)
 ```
 
 ![fig-TSLA_validation](https://github.com/aim137/MachineLearning_stock_predictor/assets/70944449/a63ec254-a4cd-4f5d-86e4-1e0e6706c46e)
+
+Option 2: Train model with all available data (except last 60 days) and predict tomorrow's close price based on last 60 days
+```python
+my_dict['is_validate'] = False
+df, tomorrow_close = driver.run('TSLA', model_params=my_dict)
+```
+
+![fig-TSLA_prediction](https://github.com/aim137/MachineLearning_stock_predictor/assets/70944449/949d7efa-1dce-4c12-9e70-df50a7f92724)
+
 
 ## Contributing
 

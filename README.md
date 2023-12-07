@@ -39,7 +39,7 @@ df, df_prediction = driver.run('TSLA', model_params=my_dict)
 What it does:
 
 Result of validation:
-![Validation excercise for TSLA stock price](./validate/fig-TSLA-validation_up_to_20231207-00.00.00.pdf "Try it yourself!")
+![Validation excercise for TSLA stock price](./validation/fig-TSLA-validation_up_to_20231207-00.00.00.pdf "Try it yourself!")
 
 ## Contributing
 

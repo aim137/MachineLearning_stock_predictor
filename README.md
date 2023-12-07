@@ -18,12 +18,28 @@ pip install -e .
 
 ## Usage
 
+Import run function
 ```python
 from mlstockpredictor import driver
-
-driver.run('TSLA',60) # Predict tomorrow's close price based on last 60 days
-
 ```
+Option 1: Train model with all available data (except last 60 days) and predict tomorrow's close price based on last 60 days
+```python
+df, tomorrow_close = driver.run('TSLA')
+```
+Option 2: Build and validate a model with a given set of parameters, e.g.,
+```python
+my_dict = {
+           'epochs': 25,
+           'batch_size': 30,
+           'training_days': 57,
+           'is_validate': True,
+          }
+df, df_prediction = driver.run('TSLA', model_params=my_dict)
+```
+What it does:
+
+Result of validation:
+![Validation excercise for TSLA stock price](./validate/fig-TSLA-validation_up_to_20231207-00.00.00.pdf "Try it yourself!")
 
 ## Contributing
 

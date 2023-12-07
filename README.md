@@ -18,7 +18,7 @@ pip install -e .
 
 ## How it works
 
-![Workflow](https://github.com/aim137/MachineLearning_stock_predictor/assets/70944449/00a78b4b-e835-4696-a27e-9e88418760b8)
+![Workflow](https://github.com/aim137/MachineLearning_stock_predictor/assets/70944449/36906510-aae3-4c6b-ac25-131d1033933c)
 
 ## Usage
 

@@ -14,11 +14,11 @@ def get_stock_data(ticker: str,start_date:str = None, end_date:str = None) -> tu
     
     in_dates, market_close = get_dates(start_date,end_date)
 
-    _data = update_write_db(ticker, in_dates)
+    _data, n_lines_pulled = update_write_db(ticker, in_dates)
 
     _data.reset_index(inplace=True)
 
-    return _data[["Date","Close"]], in_dates, market_close
+    return _data[["Date","Close"]], in_dates, market_close, n_lines_pulled
 
 
 def get_dates(s,e):
@@ -41,6 +41,8 @@ def get_dates(s,e):
         market_close = datetime.now().astimezone(timezone('US/Eastern')).hour >= 16
         if not market_close:
             _end -= timedelta(days=1)
+    else:
+        market_close = True
     return (_start, _end), market_close
 
 def update_write_db(ticker,in_dates):
@@ -56,27 +58,30 @@ def update_write_db(ticker,in_dates):
             db_start = date.fromisoformat(db_start.split(' ')[0])
             db_end   = date.fromisoformat(db_end.split(' ')[0])
 
+            n_lines_pulled = 0
+
             if (in_dates[0] < db_start): 
                 _data = yf.download(ticker,start = in_dates[0], end = db_start)
                 _data.to_sql(f'{ticker}',engine, if_exists='append')
-                print(f"Imported {len(_data)} lines")
+                n_lines_pulled += len(_data)
 
             if (in_dates[1] > db_end): 
                 _data = yf.download(ticker,start = db_end + timedelta(days=1), end = in_dates[1]+timedelta(days=1))
                 _data.to_sql(f'{ticker}',engine, if_exists='append')
-                print(f"Imported {len(_data)} lines")
+                n_lines_pulled += len(_data)
 
         else:
             _data = yf.download(ticker,start = in_dates[0], end = in_dates[1])
             _data.to_sql(f'{ticker}',engine)
-            return _data # return df if Table in DB was created
+            n_lines_pulled = len(_data)
+            return _data, n_lines_pulled # return df if Table in DB was created
 
     # Get data from DB
     _d1 = in_dates[0].isoformat()
     _d2 = (in_dates[1]+timedelta(days=1)).isoformat()
     _data = pd.read_sql(f"SELECT * FROM {ticker} WHERE Date BETWEEN '{_d1}' AND '{_d2}'",engine)
     _data.Date = pd.to_datetime(_data.Date)
-    return _data
+    return _data, n_lines_pulled
 
 if __name__ == "__main__":
     df = get_stock_data('TSLA','20201127','20201212')

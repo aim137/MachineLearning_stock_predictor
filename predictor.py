@@ -25,12 +25,15 @@ class Predictor():
     self.should_report = self.model_params['should_report']
   
     self.df, *_to_unpack = get_stock_data(ticker,start_date=start,end_date=end)
-    self.in_dates, self.market_close = _to_unpack
+    self.in_dates, self.market_close, self.n_lines_pulled = _to_unpack
     self.start, self.end = self.in_dates
     
     if self.is_validate:
       if (self.df.shape[0] - int(self.df.shape[0]*self.model_params['split_frac']) <= self.model_params['training_days']):
         raise ValueError("The number of datapoints requested for each prediction exceedes the size of the dataframe provided")
+    else:
+      if (self.df.shape[0] <= self.model_params['training_days']):
+        raise ValueError("The number of datapoints requested for each prediction exceedes the size of the dataframe provided") 
   
     if self.is_validate:
       # Use {split_frac*100}% of the data to train the model 

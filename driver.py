@@ -9,7 +9,6 @@ from collections import ChainMap
 # Run prediction one time to get tomorrow's estimated Close price
 # or validate a model with a given set of parameters
 # <><><><><>
-#def run(ticker: str, training_days: int = 60 , split_frac: float = 0.8 , plot: bool = True , model_params['is_validate']: bool = False) -> tuple:
 def run(ticker: str, start: str = None, end: str = None, model_params: dict = {}) -> tuple:
 
   model_params = dict(ChainMap(model_params,default_model_params))

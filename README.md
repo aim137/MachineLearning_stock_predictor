@@ -22,9 +22,9 @@ pip install -e .
 
 ## Usage
 
-Import run function
+Import class
 ```python
-from mlstockpredictor import driver
+from mlstockpredictor import Predictor
 ```
 
 Option 1: Build and validate a model with a given set of parameters, e.g.,
@@ -35,7 +35,8 @@ my_dict = {
            'training_days': 57,
            'is_validate': True,
           }
-df, df_prediction = driver.run('TSLA', model_params=my_dict)
+my_predictor = Predictor('TSLA', model_params=my_dict)
+df, df_prediction = my_predictor.run()
 ```
 
 ![fig-TSLA_validation](https://github.com/aim137/MachineLearning_stock_predictor/assets/70944449/a63ec254-a4cd-4f5d-86e4-1e0e6706c46e)
@@ -43,7 +44,8 @@ df, df_prediction = driver.run('TSLA', model_params=my_dict)
 Option 2: Train model with all available data (except last 60 days) and predict tomorrow's close price based on last 60 days
 ```python
 my_dict['is_validate'] = False
-df, tomorrow_close = driver.run('TSLA', model_params=my_dict)
+another_predictor = Predictor('TSLA', model_params=my_dict)
+df, tomorrow_close = another_predictor.run()
 ```
 
 ![fig-TSLA_prediction](https://github.com/aim137/MachineLearning_stock_predictor/assets/70944449/949d7efa-1dce-4c12-9e70-df50a7f92724)

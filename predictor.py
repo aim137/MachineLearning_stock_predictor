@@ -3,6 +3,7 @@ from mlstockpredictor.data.stock import get_stock_data
 from mlstockpredictor.aux.functions import plot_prediction
 from mlstockpredictor.aux.defaults import default_model_params
 from collections import ChainMap
+from icecream import ic
 
 
 # <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
@@ -12,17 +13,20 @@ from collections import ChainMap
 class Predictor():
 
   def __init__(self,ticker: str, start: str = None, end: str = None, model_params: dict = {}):
+    """
+    start and end dates should be in isoformat, e.g., '2022-12-08'
+    """
   
     self.ticker = ticker
-    self.start  = start
-    self.end    = end
     self.model_params = dict(ChainMap(model_params,default_model_params))
     # Expose some keys
     self.is_validate = self.model_params['is_validate']
     self.should_plot = self.model_params['should_plot']
     self.should_report = self.model_params['should_report']
   
-    self.df = get_stock_data(ticker,start_date=start,end_date=end)
+    self.df, *_to_unpack = get_stock_data(ticker,start_date=start,end_date=end)
+    self.in_dates, self.market_close = _to_unpack
+    self.start, self.end = self.in_dates
     
     if self.is_validate:
       if (self.df.shape[0] - int(self.df.shape[0]*self.model_params['split_frac']) <= self.model_params['training_days']):

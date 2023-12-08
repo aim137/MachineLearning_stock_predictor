@@ -50,13 +50,23 @@ df, tomorrow_close = another_predictor.run()
 
 ![fig-TSLA_prediction](https://github.com/aim137/MachineLearning_stock_predictor/assets/70944449/949d7efa-1dce-4c12-9e70-df50a7f92724)
 
+## Unit tests
+
+```bash
+cd unit_test
+```
+The database can be kept or deleted - it will be regenerated provided data can be pulled from yfinance
+```bash
+pytest
+```
+All 6 tests should pass within 45 seconds
 
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first
 to discuss what you would like to change.
 
-Please make sure to update tests as appropriate.
+Please make sure to update unit tests and examples as appropriate.
 
 ## License
 

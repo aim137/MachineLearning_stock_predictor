@@ -13,4 +13,5 @@ default_model_params = {
     'batch_size'     : 32,
     'is_validate'    : False,
     'should_plot'    : True,
+    'should_report'  : False,
 }

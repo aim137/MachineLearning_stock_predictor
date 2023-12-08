@@ -55,11 +55,12 @@ df, tomorrow_close = another_predictor.run()
 ```bash
 cd unit_test
 ```
-The database can be kept or deleted - it will be regenerated provided data can be pulled from yfinance
+The database `daily_data_stocks.db` can be kept or deleted.
+It will be regenerated provided data can be pulled from `yfinance`.
 ```bash
 pytest
 ```
-All 6 tests should pass within 45 seconds
+All 6 tests should pass within 45 seconds.
 
 ## Contributing
 
